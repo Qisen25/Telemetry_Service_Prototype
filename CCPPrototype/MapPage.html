@@ -50,7 +50,7 @@
           });
 
           socket.on("updateLocation", function(name, currLocation) {
-              var latlong = new google.maps.LatLng(currLocation["lattitude"], currLocation["longitude"]);
+              var latlong = new google.maps.LatLng(currLocation["latitude"], currLocation["longitude"]);
               moveMarker(name, currLocation["ID"], latlong);
           });
 

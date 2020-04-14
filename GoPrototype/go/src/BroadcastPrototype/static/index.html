@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Kei's Go Broadcast prototype</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fingerprintjs2/2.1.0/fingerprint2.js"></script>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+
+      var map;
+      var markers = {};
+      var socket;
+
+      var mark
+      var loc;
+      var uid 
+
+
+    function initMap() {
+
+      URL = window.location.href;
+      result = URL.replace(/(^\w+:|^)\/\//, '');
+      //alert(result);
+      socket = new WebSocket("wss://" + result + "ws");          
+
+      socket.onopen = () => {
+        uid = Date.now().toString() + Math.random().toString(36).substring(2, 15);
+        getLocationUpdate();
+        loc = navigator.geolocation;
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 11,
+          center: {lat: -31.950, lng: 115.824}
+        });
+
+        mark = new google.maps.Marker({
+        	position: {lat: -31.950, lng: 115.824},
+        	map: map                                                                                         
+      	});
+        
+
+        //socket.send(uid);
+
+      };
+
+      socket.onmessage = function (e) {
+          var latLg = JSON.parse(e.data);  
+          if(latLg.type === "Location")
+          {
+            var latlong = new google.maps.LatLng(latLg.latitude, latLg.longitude);
+            moveMarker(latLg.ID, latLg.ID, latlong);
+          }
+          else if(latLg.type === "RemoveLoc")
+          {
+              uniqueID = latLg.ID;
+              if(markers[uniqueID] != null)
+              {
+                markers[uniqueID].setMap(null);
+                markers[uniqueID] = null; 
+              }
+          }
+          else if(latLg.type === "Alert")
+          {
+            alert(latLg.reason)  
+          }
+      };
+
+      socket.onclose = event => {
+        console.log("Socket Closed Connection: ", event);
+        socket.send("Client Closed!")
+      };
+    }
+
+      
+    function moveMarker(device, key, latlong){
+      if(markers[key] == null)
+      {
+        markers[key] = new google.maps.Marker({
+          position: latlong,
+          map: map,   
+          title: device                                                                                       
+        });
+      }
+      else
+      {
+        markers[key].setPosition(latlong);
+      }
+    }
+
+    function showLocation(position) {
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+        var GeoJSON = {
+            "uid" : uid,
+            "longitude" : longitude,
+            "latitude" : latitude
+        };
+        socket.send(JSON.stringify(GeoJSON));
+        //socket.send(uid + "," +latitude + "," + longitude);
+    }
+     
+     function errorHandler(err) {
+        if(err.code == 1) {
+           alert("Error: Access is denied!");
+        } 
+        else if( err.code == 2) 
+        {
+           alert("Error: Position is unavailable!");
+        }
+    }
+     
+     function getLocationUpdate(){
+        
+        if(navigator.geolocation){
+           
+           // timeout at 60000 milliseconds (60 seconds)
+           var options = {};
+           var geoLoc = navigator.geolocation;
+           var watchID = geoLoc.watchPosition(showLocation, errorHandler, options);
+        } 
+        else 
+        {
+           alert("Sorry, browser does not support geolocation!");
+        }
+    }
+
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCz3I3IZ6xGiXPfQP_xi-WOgD37ieRr2og&callback=initMap">
+    </script>
+  </body>
+</html>
