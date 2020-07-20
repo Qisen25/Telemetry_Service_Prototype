@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>CCP playaround prototype</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+
+      var map;
+      var markers = {};
+      var socket;
+
+      var mark
+
+
+      function initMap() {
+
+          URL = window.location.href;
+
+          var ws = new WebSocket("ws://localhost:3012");
+
+          ws.onopen = function() {
+
+            map = new google.maps.Map(document.getElementById('map'), {
+              zoom: 11,
+              center: {lat: -31.950, lng: 115.824}
+            });
+
+            mark = new google.maps.Marker({
+            	position: {lat: -31.950, lng: 115.824},
+            	map: map                                                                                         
+          	});
+
+            var msg = {
+              type: "identify",
+              id: URL
+            }
+
+            ws.send(JSON.stringify(msg));
+          }
+      }
+
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCz3I3IZ6xGiXPfQP_xi-WOgD37ieRr2og&callback=initMap">
+    </script>
+  </body>
+</html>
