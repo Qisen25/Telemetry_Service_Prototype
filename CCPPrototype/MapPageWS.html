@@ -33,7 +33,7 @@
 
           URL = window.location.href;
 
-          var ws = new WebSocket("ws://localhost:3012");
+          var ws = new WebSocket("wss://10.0.0.111:3001");
 
           ws.onopen = function() {
 
@@ -47,12 +47,16 @@
             	map: map                                                                                         
           	});
 
-            var msg = {
-              type: "identify",
-              id: URL
-            }
+            // var msg = {
+            //   type: "identify",
+            //   id: URL
+            // }
 
-            ws.send(JSON.stringify(msg));
+            // ws.send(JSON.stringify(msg));
+          }
+
+          ws.onclose = function(e) {
+            alert('Server has disconnected');
           }
       }
 
