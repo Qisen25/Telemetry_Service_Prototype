@@ -33,7 +33,7 @@
       function initMap() {
 
           URL = window.location.href;
-          socket = io.connect(URL);
+          socket = io();
 
           socket.on("connect", function() {
 

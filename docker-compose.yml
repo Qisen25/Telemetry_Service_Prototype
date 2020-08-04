@@ -1,0 +1,15 @@
+version: '3'
+services:
+  web:
+      container_name: nginx-proxy
+      build: ./NGINXdock
+      depends_on:
+          - node1
+      ports:
+          - "8020:8020"
+  node1:
+      container_name: node1
+      build: ./CCPPrototype
+      ports:
+          - "3000:3000"
+

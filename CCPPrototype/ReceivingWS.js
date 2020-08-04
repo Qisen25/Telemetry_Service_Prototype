@@ -14,15 +14,15 @@ const options = {
 };
 
 
-const insecServer = http.createServer(app);
+const server = http.createServer(app);
 
-const server = https.createServer(options, app);
+// const server = https.createServer(options, app);
 
-const readline = require("readline");
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
+// const readline = require("readline");
+// const rl = readline.createInterface({
+//     input: process.stdin,
+//     output: process.stdout
+// });
 
 // const server = http.createServer();
 
@@ -47,8 +47,6 @@ wsServer.on('connection', function connection(ws, request, client) {
     });
 });
 
-console.log('ReceivingWS listening on PORT 3001');
-
 // rl.question("Enter to view list of clients", function(keyP) {
 // 	if(keyP === '\r'){
 // 		wsServer.clients.forEach(function each(client) {
@@ -58,16 +56,20 @@ console.log('ReceivingWS listening on PORT 3001');
 // });
 
 //http
-insecServer.listen(app.get("port"));
-//https
-server.listen(3001);
-
-process.stdin.on('keypress', (str, key) => {
-  // console.log(str)
-  // console.log(key)
-    if(key.sequence === '\r') {
-      	 wsServer.clients.forEach(function each(client) {
-    		console.log('Client ' + client.id + ' exists');
-    	});
-    }
+server.listen(app.get("port"), () => {
+    console.log('ReceivingWS http listening on PORT ' + app.get("port"));
 });
+//https
+// server.listen(3001, () => {
+//     console.log('ReceivingWS https listening on PORT 3001');
+// });
+
+// process.stdin.on('keypress', (str, key) => {
+//   // console.log(str)
+//   // console.log(key)
+//     if(key.sequence === '\r') {
+//       	 wsServer.clients.forEach(function each(client) {
+//     		console.log('Client ' + client.id + ' exists');
+//     	});
+//     }
+// });

@@ -33,7 +33,7 @@
 
           URL = window.location.href;
 
-          var ws = new WebSocket("wss://10.0.0.111:3001");
+          var ws = new WebSocket("ws://" + location.host);
 
           ws.onopen = function() {
 
