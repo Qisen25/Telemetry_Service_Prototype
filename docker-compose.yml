@@ -8,8 +8,8 @@ services:
       ports:
           - "8020:8020"
   node1:
-      container_name: node1
+      # container_name: node1 //cannot --scale if hard code container name
       build: ./CCPPrototype
-      ports:
-          - "3000:3000"
+      # ports:
+      #     - "3000:3000"
 

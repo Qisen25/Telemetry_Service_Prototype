@@ -18,7 +18,12 @@
       }
     </style>
   </head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.js"></script>
   <body>
+    <div>
+      <button onclick="getHostName()">Check Host</button>
+    </div>
     <div id="map"></div>
     <script>
 
@@ -33,7 +38,7 @@
 
           URL = window.location.href;
 
-          var ws = new WebSocket("ws://" + location.host);
+          var ws = new ReconnectingWebSocket("ws://" + location.host);
 
           ws.onopen = function() {
 
@@ -53,13 +58,23 @@
             // }
 
             // ws.send(JSON.stringify(msg));
+
+            setInterval(function() { ws.send("hello"); }, 5000);
+
+          }
+
+          ws.onmessage = function(event){
+
+              var stuff = JSON.parse(event.data);
+              if(stuff.type === 'host'){
+                alert("Connected to service: " + stuff.name);
+              }
           }
 
           ws.onclose = function(e) {
             alert('Server has disconnected');
           }
       }
-
     </script>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCz3I3IZ6xGiXPfQP_xi-WOgD37ieRr2og&callback=initMap">

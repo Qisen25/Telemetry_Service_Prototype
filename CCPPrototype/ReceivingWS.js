@@ -4,6 +4,7 @@ const fs = require('fs');
 const WebSocket = require('ws');
 const express = require('express');
 const app = express();
+const os = require('os');
 app.set('port', process.env.PORT || 3000);
 
 //https cert and keys
@@ -33,6 +34,12 @@ app.get('/', (req, res) => {
     res.sendFile('MapPageWS.html', { root: __dirname});
 });
 
+// app.get('/api/who', (req, res) => {
+//     //res.send('Server is running on port 3000');
+//     console.log("Requesting hostname");
+//     res.send("Host: " + os.hostname());
+// });
+
 //when client establishes client to server
 wsServer.on('connection', function connection(ws, request, client) {
 	// ws.on('message', function incoming(message) {
@@ -45,6 +52,12 @@ wsServer.on('connection', function connection(ws, request, client) {
     ws.on('close', function close() {//when client socket closes
       console.log(ws.id + ' has disconnected');
     });
+
+    ws.on('message', function incoming(message) {
+        console.log(ws.id + ' Message: ' + message);
+    });
+
+    ws.send(JSON.stringify({type: 'host', name: os.hostname()}));
 });
 
 // rl.question("Enter to view list of clients", function(keyP) {
